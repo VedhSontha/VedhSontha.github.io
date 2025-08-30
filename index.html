@@ -3,287 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vedh Sontha - Interactive Portfolio</title>
+    <title>Vedh Sontha - Cybernetic Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+        :root {
+            --bg-dark: #0D0D1A;
+            --card-bg: #1A1A2E;
+            --border-color: rgba(60, 60, 90, 0.8);
+            --glow-color: #5F2EEA;
+            --text-primary: #E0E0E0;
+            --text-secondary: #A0A0B0;
+            --accent-blue: #00BFFF;
+            --accent-green: #39FF14;
+        }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Inter', sans-serif;
+            /* NEW: CSS-only background for stability and style */
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at center, rgba(95, 46, 234, 0.1) 0%, transparent 70%),
+                linear-gradient(rgba(0, 191, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 255, 0.07) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed; /* Keeps the grid in place */
+            
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
+            overflow-x: hidden;
         }
-        /* Style for the project details to be hidden by default */
-        .project-detail {
-            display: none;
+
+        .font-display { font-family: 'Orbitron', sans-serif; }
+        
+        .text-gradient {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green), var(--accent-blue));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: gradient-pan 4s linear infinite;
         }
-        /* Simple fade-in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        @keyframes gradient-pan {
+            from { background-position: 0% center; }
+            to { background-position: -200% center; }
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out forwards;
+        
+        .cyber-card {
+            background: rgba(26, 26, 46, 0.8); /* Added more transparency */
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px); /* Frosted glass effect */
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(95, 46, 234, 0.2), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .cyber-card:hover::before { opacity: 1; }
+
+        .cyber-card:hover {
+            border-color: var(--glow-color);
+            box-shadow: 0 0 25px rgba(95, 46, 234, 0.5);
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        .main-view, .project-view {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+
+        .hidden-view {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        #main-view.hidden-view { transform: translateX(-100px); }
+        #project-view { transform: translateX(0); } /* Centered when visible */
+        #project-view.hidden-view { transform: translateX(100px); } /* Pushed off-screen when hidden */
+
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-animate.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glitch-wrapper { position: relative; display: inline-block; }
+        .glitch:before, .glitch:after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+        }
+        .glitch:before {
+            left: 2px;
+            text-shadow: -2px 0 var(--accent-green);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch:after {
+            left: -2px;
+            text-shadow: -2px 0 var(--accent-blue), 2px 2px var(--accent-green);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0%, 100% { clip: rect(44px, 9999px, 9px, 0); } 20% { clip: rect(5px, 9999px, 76px, 0); } 40% { clip: rect(42px, 9999px, 86px, 0); } 60% { clip: rect(20px, 9999px, 15px, 0); } 80% { clip: rect(21px, 9999px, 75px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+             0%, 100% { clip: rect(65px, 9999px, 120px, 0); } 20% { clip: rect(8px, 9999px, 100px, 0); } 40% { clip: rect(40px, 9999px, 8px, 0); } 60% { clip: rect(50px, 9999px, 130px, 0); } 80% { clip: rect(120px, 9999px, 50px, 0); }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
 
-    <div class="container mx-auto p-4 sm:p-8 max-w-6xl">
-        <div class="bg-white rounded-2xl shadow-2xl shadow-gray-300/40 overflow-hidden">
-            <div class="md:flex">
-                <!-- Left Column / Sidebar (Stays Static) -->
-                <aside class="md:w-1/3 bg-gray-800 text-white p-8">
-                    <div class="flex flex-col items-center md:items-start">
-                        <div class="w-32 h-32 rounded-full bg-gray-700 mb-6 border-4 border-gray-600 flex-shrink-0">
-                             <img src="https://placehold.co/128x128/4A5568/E2E8F0?text=VS" alt="Profile Picture" class="rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/128x128/4A5568/E2E8F0?text=VS';">
-                        </div>
-                        <h1 class="text-4xl font-bold text-center md:text-left text-cyan-300">Vedh Sontha</h1>
-                        <p class="text-lg text-gray-300 mt-2 text-center md:text-left">AI & Robotics Enthusiast</p>
-                    </div>
+<body>
+    <!-- The <canvas> element has been removed -->
 
-                    <div class="mt-10">
-                        <!-- Contact Info -->
-                        <h2 class="text-xl font-semibold border-b-2 border-cyan-400 pb-2 mb-4">Contact</h2>
-                        <ul class="space-y-3 text-gray-300">
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 mr-3 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                <span>9902905189</span>
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 mr-3 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                <span>vedhrox04@gmail.com</span>
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 mr-3 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                <a href="https://www.linkedin.com/in/vedh-sontha-12401a346" target="_blank" class="hover:text-cyan-300 transition-colors">LinkedIn Profile</a>
-                            </li>
-                             <li class="flex items-center">
-                                <svg class="w-5 h-5 mr-3 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"></path></svg>
-                                <a href="https://github.com/VedhSontha" target="_blank" class="hover:text-cyan-300 transition-colors">GitHub Profile</a>
-                            </li>
-                        </ul>
+    <div class="relative min-h-screen">
+        <!-- MAIN PORTFOLIO VIEW -->
+        <div id="main-view" class="main-view max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            
+            <!-- HERO SECTION -->
+            <header class="text-center py-16">
+                <div class="relative inline-block mb-8">
+                    <div class="absolute inset-0 bg-gradient-to-r from-accent-blue to-accent-green rounded-full opacity-20 blur-2xl animate-pulse"></div>
+                    <img src="https://placehold.co/160x160/1A1A2E/E0E0E0?text=VS" alt="Vedh Sontha" class="relative w-40 h-40 rounded-full border-2 border-glow-color/50">
+                </div>
+                <div class="glitch-wrapper">
+                    <h1 class="glitch font-display text-5xl md:text-7xl font-bold text-gradient mb-4" data-text="Vedh Sontha">Vedh Sontha</h1>
+                </div>
+                <p class="text-xl md:text-2xl text-text-secondary"><span class="text-accent-blue">&gt;</span> AI & Robotics Enthusiast</p>
+            </header>
+            
+            <!-- EDUCATION & SKILLS GRID -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 my-16">
+                <!-- Education Card -->
+                <div class="cyber-card rounded-2xl p-8 lg:col-span-1 scroll-animate">
+                    <div class="flex items-center gap-4 mb-4">
+                        <i data-lucide="graduation-cap" class="text-accent-blue"></i>
+                        <h3 class="font-display text-xl font-bold text-gradient">Education</h3>
                     </div>
-                    <!-- Education & Skills -->
-                    <div class="mt-10">
-                        <h2 class="text-xl font-semibold border-b-2 border-cyan-400 pb-2 mb-4">Education</h2>
-                        <h3 class="font-bold text-lg">Manipal Institute of Technology</h3>
-                        <p class="text-gray-300">B.Tech, Computers & Communication</p>
-                        <p class="text-sm text-gray-400">Expected Graduation: [May, 2028]</p>
-                        <p class="text-sm text-gray-400 mt-1">CGPA: 7.93 / 10.0</p>
-                    </div>
-                    <div class="mt-10">
-                        <h2 class="text-xl font-semibold border-b-2 border-cyan-400 pb-2 mb-4">Technical Skills</h2>
-                        <div class="mt-4">
-                            <h3 class="font-semibold text-cyan-300 mb-2">Languages</h3>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">Python</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">C</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">Java (Basic)</span>
-                            </div>
-                        </div>
-                         <div class="mt-4">
-                            <h3 class="font-semibold text-cyan-300 mb-2">Libraries & Frameworks</h3>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">TensorFlow</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">PyTorch</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">Scikit-learn</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">OpenCV</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">ROS2</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">Pandas and Numpy</span>
-                                <span class="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">Keras</span>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
+                    <h4 class="text-xl font-bold">Manipal Institute of Technology</h4>
+                    <p class="text-text-secondary">B.Tech, Computers & Communication</p>
+                    <p class="text-sm text-gray-500 mt-2">Expected May 2028</p>
+                    <p class="font-bold mt-1 text-accent-green">CGPA: 7.93 / 10.0</p>
+                </div>
 
-                <!-- Right Column / Main Content (Becomes Dynamic) -->
-                <main class="w-full p-8">
-                    <!-- This div contains the main project list -->
-                    <div id="project-list-container">
-                        <h2 class="text-3xl font-bold text-gray-800 border-b-4 border-cyan-400 pb-2 mb-6">Projects</h2>
-                        <div class="space-y-4">
-                            <!-- Project links -->
-                            <div class="project-link group" data-project="tumor">
-                                <a href="#" class="block text-xl font-bold text-gray-800 bg-gray-50 p-6 rounded-xl border-2 border-transparent group-hover:border-cyan-400 group-hover:bg-cyan-50 transition-all duration-300 transform group-hover:scale-105">Brain Tumor Classification and Detection</a>
-                            </div>
-                            <div class="project-link group" data-project="enhancement">
-                                <a href="#" class="block text-xl font-bold text-gray-800 bg-gray-50 p-6 rounded-xl border-2 border-transparent group-hover:border-cyan-400 group-hover:bg-cyan-50 transition-all duration-300 transform group-hover:scale-105">Real-Time Low-Light Enhancement</a>
-                            </div>
-                            <div class="project-link group" data-project="game">
-                                <a href="#" class="block text-xl font-bold text-gray-800 bg-gray-50 p-6 rounded-xl border-2 border-transparent group-hover:border-cyan-400 group-hover:bg-cyan-50 transition-all duration-300 transform group-hover:scale-105">Hand Gesture Controlled Racing Game</a>
-                            </div>
-                            <div class="project-link group" data-project="summarizer">
-                                <a href="#" class="block text-xl font-bold text-gray-800 bg-gray-50 p-6 rounded-xl border-2 border-transparent group-hover:border-cyan-400 group-hover:bg-cyan-50 transition-all duration-300 transform group-hover:scale-105">Abstractive Text Summarizer</a>
-                            </div>
-                            <div class="project-link group" data-project="robot">
-                                <a href="#" class="block text-xl font-bold text-gray-800 bg-gray-50 p-6 rounded-xl border-2 border-transparent group-hover:border-cyan-400 group-hover:bg-cyan-50 transition-all duration-300 transform group-hover:scale-105">Autonomous Pathfinding Robot</a>
-                            </div>
-                        </div>
+                <!-- Skills Matrix -->
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="cyber-card rounded-2xl p-6 scroll-animate" style="transition-delay: 0.1s;">
+                         <div class="flex items-center gap-3 mb-4"><i data-lucide="code-2" class="text-accent-blue"></i><h4 class="font-display font-bold text-lg">Languages</h4></div>
+                         <div class="space-y-2 text-text-secondary"><div>Python</div><div>C</div><div>Java (Basic)</div></div>
                     </div>
+                    <div class="cyber-card rounded-2xl p-6 scroll-animate" style="transition-delay: 0.2s;">
+                         <div class="flex items-center gap-3 mb-4"><i data-lucide="cpu" class="text-accent-blue"></i><h4 class="font-display font-bold text-lg">AI/ML Frameworks</h4></div>
+                         <div class="grid grid-cols-2 gap-2 text-text-secondary"><div>TensorFlow</div><div>PyTorch</div><div>Scikit-Learn</div><div>Keras</div></div>
+                    </div>
+                    <div class="cyber-card rounded-2xl p-6 scroll-animate" style="transition-delay: 0.3s;">
+                         <div class="flex items-center gap-3 mb-4"><i data-lucide="eye" class="text-accent-green"></i><h4 class="font-display font-bold text-lg">Computer Vision</h4></div>
+                         <div class="grid grid-cols-2 gap-2 text-text-secondary"><div>OpenCV</div><div>YOLO</div><div>MediaPipe</div></div>
+                    </div>
+                    <div class="cyber-card rounded-2xl p-6 scroll-animate" style="transition-delay: 0.4s;">
+                         <div class="flex items-center gap-3 mb-4"><i data-lucide="robot" class="text-accent-green"></i><h4 class="font-display font-bold text-lg">Robotics & Data</h4></div>
+                         <div class="grid grid-cols-2 gap-2 text-text-secondary"><div>ROS2</div><div>Gazebo</div><div>Pandas</div><div>NumPy</div></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- PROJECT SHOWCASE -->
+            <section class="my-24">
+                <div class="text-center mb-12 scroll-animate">
+                    <h2 class="font-display text-4xl md:text-5xl font-bold text-gradient">Project Portfolio</h2>
+                    <p class="text-lg text-text-secondary mt-2">Exploring the frontiers of AI and robotics.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="project-link cyber-card rounded-2xl p-8 cursor-pointer scroll-animate" style="transition-delay: 0.1s;" data-project="tumor">
+                        <div class="flex items-center gap-4 mb-3"><i data-lucide="brain" class="text-glow-color" style="color:var(--glow-color)"></i><h3 class="font-display text-xl font-bold">Brain Tumor Classification</h3></div>
+                        <p class="text-text-secondary text-sm">Medical AI • 96% Accuracy</p>
+                    </div>
+                    <div class="project-link cyber-card rounded-2xl p-8 cursor-pointer scroll-animate" style="transition-delay: 0.2s;" data-project="enhancement">
+                        <div class="flex items-center gap-4 mb-3"><i data-lucide="zap" class="text-accent-blue"></i><h3 class="font-display text-xl font-bold">Real-Time Low-Light Enhancement</h3></div>
+                        <p class="text-text-secondary text-sm">Computer Vision • 30-40 FPS</p>
+                    </div>
+                    <div class="project-link cyber-card rounded-2xl p-8 cursor-pointer scroll-animate" style="transition-delay: 0.3s;" data-project="game">
+                        <div class="flex items-center gap-4 mb-3"><i data-lucide="gamepad-2" class="text-accent-green"></i><h3 class="font-display text-xl font-bold">Hand Gesture Controlled Game</h3></div>
+                        <p class="text-text-secondary text-sm">HCI • Real-time Control</p>
+                    </div>
+                     <div class="project-link cyber-card rounded-2xl p-8 cursor-pointer scroll-animate" style="transition-delay: 0.4s;" data-project="summarizer">
+                        <div class="flex items-center gap-4 mb-3"><i data-lucide="file-text" style="color: #ff00c1;"></i><h3 class="font-display text-xl font-bold">Abstractive Text Summarizer</h3></div>
+                        <p class="text-text-secondary text-sm">NLP • Transformer Architecture</p>
+                    </div>
+                     <div class="project-link cyber-card rounded-2xl p-8 cursor-pointer scroll-animate" style="transition-delay: 0.5s;" data-project="robot">
+                        <div class="flex items-center gap-4 mb-3"><i data-lucide="bot" style="color: #ff8c00;"></i><h3 class="font-display text-xl font-bold">Autonomous Pathfinding Robot</h3></div>
+                        <p class="text-text-secondary text-sm">Robotics • A* Algorithm</p>
+                    </div>
+                </div>
+            </section>
 
-                    <!-- This div will hold the details for the selected project -->
-                    <div id="project-details-container">
-                        <!-- Details for Project 1 -->
-                        <div id="tumor" class="project-detail">
-                            <div class="flex justify-between items-center">
-                                <h3 class="text-2xl font-bold text-gray-900">Brain Tumor Classification and Detection</h3>
-                                <button class="close-btn text-gray-500 hover:text-red-500 font-bold text-2xl">&times;</button>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1 italic">Tech: Python, TensorFlow, Keras, OpenCV, YOLO</p>
-                            <ul class="list-disc list-inside mt-3 text-gray-700 space-y-1">
-                                <li>Designed a custom CNN to classify brain tumors from MRI scans, achieving <strong>96% accuracy</strong>.</li>
-                                <li>Trained a YOLOv5 model for real-time object detection, drawing bounding boxes on tumors.</li>
-                                <li>Work is being prepared for submission as a research paper.</li>
-                            </ul>
-                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <img src="tumor-1.jpg" alt="Brain Tumor Project Image 1" class="rounded-lg shadow-md w-full h-auto object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/969696?text=Image+Not+Found';">
-                                <img src="tumor-2.jpg" alt="Brain Tumor Project Image 2" class="rounded-lg shadow-md w-full h-auto object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/969696?text=Image+Not+Found';">
-                            </div>
-                        </div>
-                        <!-- Details for Project 2 -->
-                        <div id="enhancement" class="project-detail">
-                             <div class="flex justify-between items-center">
-                                <h3 class="text-2xl font-bold text-gray-900">Real-Time Low-Light Enhancement</h3>
-                                <button class="close-btn text-gray-500 hover:text-red-500 font-bold text-2xl">&times;</button>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1 italic">Tech: Python, PyTorch/TensorFlow, OpenCV</p>
-                            <ul class="list-disc list-inside mt-3 text-gray-700 space-y-1">
-                                <li>Implemented a Zero-Reference Deep Curve Estimation (Zero-DCE) model for night-vision enhancement.</li>
-                                <li>Achieves real-time performance of **30-40 FPS** with an approximate 15ms processing delay.</li>
-                                <li>Curated and processed a custom low-light image dataset to train the model effectively.</li>
-                            </ul>
-                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <img src="enhancement-1.png" alt="Low-Light Enhancement Image 1" class="rounded-lg shadow-md w-full h-auto object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/969696?text=Image+Not+Found';">
-                                <img src="enhancement-2.png" alt="Low-Light Enhancement Image 2" class="rounded-lg shadow-md w-full h-auto object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/969696?text=Image+Not+Found';">
-                            </div>
-                        </div>
-                        <!-- Add other project details here following the same structure -->
-                         <div id="game" class="project-detail">
-                             <div class="flex justify-between items-center">
-                                <h3 class="text-2xl font-bold text-gray-900">Hand Gesture Controlled Racing Game</h3>
-                                <button class="close-btn text-gray-500 hover:text-red-500 font-bold text-2xl">&times;</button>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1 italic">Tech: Python, OpenCV, MediaPipe</p>
-                            <ul class="list-disc list-inside mt-3 text-gray-700 space-y-1">
-                                <li>Developed a novel HCI to translate real-time hand gestures into game inputs via webcam.</li>
-                                <li>Engineered a system using MediaPipe for robust hand landmark detection for intuitive control.</li>
-                            </ul>
-                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <img src="https://placehold.co/600x400/cccccc/969696?text=Add+Image+1" alt="Racing Game Image 1" class="rounded-lg shadow-md w-full h-auto object-cover">
-                                <img src="https://placehold.co/600x400/cccccc/969696?text=Add+Image+2" alt="Racing Game Image 2" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            </div>
-                        </div>
-                         <div id="summarizer" class="project-detail">
-                             <div class="flex justify-between items-center">
-                                <h3 class="text-2xl font-bold text-gray-900">Abstractive Text Summarizer</h3>
-                                <button class="close-btn text-gray-500 hover:text-red-500 font-bold text-2xl">&times;</button>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1 italic">Tech: Python, PyTorch/TensorFlow, Transformers</p>
-                            <ul class="list-disc list-inside mt-3 text-gray-700 space-y-1">
-                                <li>Built and trained a Transformer-based model for abstractive text summarization.</li>
-                                <li>Implemented a multi-head self-attention mechanism to generate concise, contextually relevant summaries.</li>
-                            </ul>
-                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <img src="https://placehold.co/600x400/cccccc/969696?text=No+Image" alt="Summarizer Image 1" class="rounded-lg shadow-md w-full h-auto object-cover">
-                                <img src="https://placehold.co/600x400/cccccc/969696?text=No+Image" alt="Summarizer Image 2" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            </div>
-                        </div>
-                         <div id="robot" class="project-detail">
-                             <div class="flex justify-between items-center">
-                                <h3 class="text-2xl font-bold text-gray-900">Autonomous Pathfinding Robot</h3>
-                                <button class="close-btn text-gray-500 hover:text-red-500 font-bold text-2xl">&times;</button>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1 italic">Tech: Python, C++, ROS2, Gazebo</p>
-                            <ul class="list-disc list-inside mt-3 text-gray-700 space-y-1">
-                                <li>Developed a simulated robot in Gazebo for autonomous navigation in a custom environment.</li>
-                                <li>Implemented the <strong>A* path planning algorithm</strong> in ROS2 for optimal obstacle avoidance.</li>
-                            </ul>
-                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <img src="https://placehold.co/600x400/cccccc/969696?text=Add+Image+1" alt="Robot Image 1" class="rounded-lg shadow-md w-full h-auto object-cover">
-                                <img src="https://placehold.co/600x400/cccccc/969696?text=Add+Image+2" alt="Robot Image 2" class="rounded-lg shadow-md w-full h-auto object-cover">
-                            </div>
-                        </div>
+            <!-- ACHIEVEMENTS -->
+            <section class="my-24">
+                 <div class="text-center mb-12 scroll-animate">
+                    <h2 class="font-display text-4xl md:text-5xl font-bold text-gradient">Achievements & Impact</h2>
+                </div>
+                 <div class="space-y-8">
+                    <div class="cyber-card rounded-2xl p-8 scroll-animate" style="transition-delay: 0.1s;">
+                         <div class="flex items-center gap-4 mb-2"><i data-lucide="users" class="text-glow-color" style="color:var(--glow-color)"></i><h3 class="font-display text-xl font-bold">Member, Rugved Systems</h3></div>
+                         <p class="text-sm text-gray-500 mb-4">April 2025 – Present</p>
+                         <ul class="list-disc list-inside text-text-secondary space-y-2">
+                             <li>Contribute to AI/ML projects with direct applications in the defense sector.</li>
+                             <li>Collaborate in a team environment on unmanned aerial vehicle (UAV) surveillance systems.</li>
+                         </ul>
                     </div>
-                    
-                    <!-- Achievements Section (Always Visible) -->
-                    <section id="achievements-container" class="mt-10">
-                        <h2 class="text-3xl font-bold text-gray-800 border-b-4 border-cyan-400 pb-2 mb-6">Achievements & Extracurriculars</h2>
-                        <div class="space-y-4">
+                    <div class="cyber-card rounded-2xl p-8 scroll-animate" style="transition-delay: 0.2s;">
+                         <div class="flex items-center gap-4 mb-2"><i data-lucide="book-open" class="text-glow-color" style="color:var(--glow-color)"></i><h3 class="font-display text-xl font-bold">Research Endeavors</h3></div>
+                         <p class="text-text-secondary">Transforming the Brain Tumor Classification project into a formal research paper for publication.</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-glow-color to-accent-blue rounded-2xl p-8 text-center scroll-animate" style="transition-delay: 0.3s;">
+                        <div class="flex justify-center items-center gap-4">
+                            <i data-lucide="trophy" class="w-8 h-8"></i>
                             <div>
-                                <h3 class="text-xl font-bold text-gray-900">Member, Rugved Systems (Student Project)</h3>
-                                <p class="text-md text-gray-600">April,2025– Present</p>
-                                <ul class="list-disc list-inside mt-2 text-gray-700 space-y-1">
-                                    <li>Contribute to AI/ML projects with direct applications in the defense sector.</li>
-                                    <li>Collaborate in a team environment on unmanned aerial vehicle (UAV) surveillance systems.</li>
-                                    <li>Developing custom algorithms for various defence purposes.</li>
-                                </ul>
+                                <h4 class="font-display text-2xl font-bold">96% Accuracy Achievement</h4>
+                                <p>In Brain Tumor Classification using custom CNN architectures.</p>
                             </div>
-                             <div>
-                                <h3 class="text-xl font-bold text-gray-900">Research Endeavors</h3>
-                                <ul class="list-disc list-inside mt-2 text-gray-700 space-y-1">
-                                    <li>Currently transforming the Brain Tumor Classification project into a formal research paper, with the clear objective of publishing it in a reputable journal—bringing impactful, real-world applications of AI in healthcare to the academic forefront.</li>
-                                </ul>
-                            </div>
+                            <i data-lucide="rocket" class="w-8 h-8"></i>
                         </div>
-                    </section>
-                </main>
+                    </div>
+                 </div>
+            </section>
+        </div>
+
+        <!-- PROJECT DETAILS VIEW (Initially hidden) -->
+        <div id="project-view" class="project-view hidden-view">
+             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <button id="back-btn" class="flex items-center gap-2 text-accent-blue mb-8 hover:text-white transition-colors">
+                    <i data-lucide="arrow-left"></i>
+                    Back to Portfolio
+                </button>
+                <div id="project-detail-content" class="cyber-card rounded-2xl p-8"></div>
             </div>
         </div>
     </div>
-
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const projectLinks = document.querySelectorAll('.project-link');
-            const projectDetails = document.querySelectorAll('.project-detail');
-            const projectListContainer = document.getElementById('project-list-container');
-            const achievementsContainer = document.getElementById('achievements-container');
-            const projectDetailsContainer = document.getElementById('project-details-container');
-            const closeButtons = document.querySelectorAll('.close-btn');
-
-            // Function to show the main list view
-            function showProjectList() {
-                projectListContainer.style.display = 'block';
-                achievementsContainer.style.display = 'block';
-                projectDetailsContainer.style.display = 'none';
-                projectDetails.forEach(detail => {
-                    detail.style.display = 'none';
-                    detail.classList.remove('fade-in');
-                });
+        const projectsData = {
+            tumor: {
+                title: "Brain Tumor Classification and Detection",
+                tech: "Python, TensorFlow, Keras, OpenCV, YOLO",
+                details: [
+                    "Designed a custom CNN to classify brain tumors from MRI scans, achieving <strong>96% accuracy</strong>.",
+                    "Trained a YOLOv5 model for real-time object detection, drawing bounding boxes on tumors.",
+                    "Work is being prepared for submission as a research paper."
+                ],
+                images: ["tumor-1.jpg", "tumor-2.jpg"]
+            },
+            enhancement: {
+                title: "Real-Time Low-Light Enhancement",
+                tech: "Python, PyTorch/TensorFlow, OpenCV",
+                details: [
+                    "Implemented a Zero-Reference Deep Curve Estimation (Zero-DCE) model for night-vision enhancement.",
+                    "Achieves real-time performance of <strong>30-40 FPS</strong> with an approximate 15ms processing delay.",
+                    "Curated and processed a custom low-light image dataset to train the model effectively."
+                ],
+                images: ["enhancement-1.png", "enhancement-2.png"]
+            },
+            game: {
+                title: "Hand Gesture Controlled Racing Game",
+                tech: "Python, OpenCV, MediaPipe",
+                details: [
+                    "Developed a novel HCI to translate real-time hand gestures into game inputs via webcam.",
+                    "Engineered a system using MediaPipe for robust hand landmark detection for intuitive control."
+                ],
+                images: []
+            },
+            summarizer: {
+                title: "Abstractive Text Summarizer",
+                tech: "Python, PyTorch/TensorFlow, Transformers",
+                details: [
+                    "Built and trained a Transformer-based model for abstractive text summarization.",
+                    "Implemented a multi-head self-attention mechanism to generate concise, contextually relevant summaries."
+                ],
+                images: []
+            },
+             robot: {
+                title: "Autonomous Pathfinding Robot",
+                tech: "Python, C++, ROS2, Gazebo",
+                details: [
+                    "Developed a simulated robot in Gazebo for autonomous navigation in a custom environment.",
+                    "Implemented the <strong>A* path planning algorithm</strong> in ROS2 for optimal obstacle avoidance."
+                ],
+                images: []
+            }
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.error("Lucide icons failed to load.", e);
             }
 
-            // Function to show a specific project's details
-            function showProjectDetails(projectId) {
-                projectListContainer.style.display = 'none';
-                achievementsContainer.style.display = 'none';
-                projectDetailsContainer.style.display = 'block';
-                
-                const detailToShow = document.getElementById(projectId);
-                if (detailToShow) {
-                    detailToShow.style.display = 'block';
-                    detailToShow.classList.add('fade-in');
-                }
-            }
+            const mainView = document.getElementById('main-view');
+            const projectView = document.getElementById('project-view');
+            const projectDetailContent = document.getElementById('project-detail-content');
+            
+            document.querySelectorAll('.project-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    const projectId = link.dataset.project;
+                    const project = projectsData[projectId];
+                    
+                    let imagesHTML = (project.images && project.images.length > 0) ?
+                        `<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${project.images.map(src => `<img src="${src}" alt="${project.title}" class="rounded-lg shadow-lg" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1A1A2E/E0E0E0?text=Image+Error';">`).join('')}
+                        </div>` : '';
 
-            // Event listeners for project links
-            projectLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const projectId = this.dataset.project;
-                    showProjectDetails(projectId);
+                    projectDetailContent.innerHTML = `
+                        <h2 class="font-display text-3xl font-bold text-gradient mb-2">${project.title}</h2>
+                        <p class="font-mono text-sm text-accent-blue mb-6">${project.tech}</p>
+                        <ul class="list-disc list-inside text-text-secondary space-y-2 mb-6">
+                            ${project.details.map(d => `<li>${d}</li>`).join('')}
+                        </ul>
+                        ${imagesHTML}
+                    `;
+                    
+                    mainView.classList.add('hidden-view');
+                    projectView.classList.remove('hidden-view');
+                    window.scrollTo(0, 0);
                 });
             });
 
-            // Event listeners for close buttons
-            closeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    showProjectList();
+            document.getElementById('back-btn').addEventListener('click', () => {
+                projectView.classList.add('hidden-view');
+                mainView.classList.remove('hidden-view');
+                window.scrollTo(0, 0);
+            });
+
+            document.querySelectorAll('.cyber-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
                 });
             });
 
-            // Initial state: show the project list
-            showProjectList();
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 
+            });
+
+            document.querySelectorAll('.scroll-animate').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // The Matrix script has been removed for stability.
         });
     </script>
-
 </body>
 </html>
+
+
